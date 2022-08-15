@@ -1,0 +1,3 @@
+.DS_Store
+data/grafana/*
+!data/grafana/.gitkeep
