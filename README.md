@@ -4,6 +4,10 @@
 
  - https://www.docker.com/
 
+## Diagram
+
+![Diagram](docu/grafana-suite.drawio.png)
+
 ## Install
 
 ### Init
