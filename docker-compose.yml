@@ -66,6 +66,26 @@ services:
     networks:
       - monitoring-network
 
+  nodeexporter:
+    build:
+      context: node_exporter/
+      args:
+        NODEEXPORTER_VERSION: $NODEEXPORTER_VERSION
+    hostname: nodeexporter
+    container_name: nodeexporter
+    ports:
+      - "9100:9100"
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./data/node_exporter
+        target: /host:ro,rslave
+    networks:
+      - monitoring-network
+      
 networks:
   monitoring-network:
     driver: bridge

@@ -1,0 +1,3 @@
+ARG NODEEXPORTER_VERSION
+
+FROM quay.io/prometheus/node-exporter:${NODEEXPORTER_VERSION}
