@@ -5,3 +5,5 @@ data/alertmanager/*
 !data/alertmanager/.gitkeep
 data/prometheus/*
 !data/prometheus/.gitkeep
+data/node_exporter/*
+!data/node_exporter/.gitkeep

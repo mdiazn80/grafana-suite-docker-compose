@@ -8,9 +8,18 @@
 
 ### Init
 
-Start
+Start All
 ```
 $ docker compose up -d
+```
+
+Start Modules:
+
+```
+$ docker compose up -d prometheus
+$ docker compose up -d alertmanager
+$ docker compose up -d nodeexporter
+$ docker compose up -d grafana
 ```
 
 Stop
