@@ -36,3 +36,19 @@ scrape_configs:
     static_configs:
       - targets: 
         - "nodeexporter:9100"
+  - job_name: 'loki'
+    dns_sd_configs:
+      - names:
+          - loki-read
+          - loki-write
+          - loki-frontend
+        type: A
+        port: 3100
+
+  - job_name: 'promtail'
+    dns_sd_configs:
+      - names:
+          - promtail
+        type: A
+        port: 9080
+        

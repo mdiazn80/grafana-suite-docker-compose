@@ -85,7 +85,126 @@ services:
         target: /host:ro,rslave
     networks:
       - monitoring-network
-      
+
+  gateway:
+    build:
+      context: gateway/
+      args:
+        NGINX_VERSION: $NGINX_VERSION
+    hostname: gateway
+    container_name: gateway
+    command: "nginx -g 'daemon off;'"
+    ports:
+      - "8080:80"
+      - "3100"
+    volumes:
+      - type: bind
+        source: ./gateway/config/nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+    networks:
+      - monitoring-network
+
+  loki-frontend:
+    build:
+      context: loki/
+      args:
+        LOKI_VERSION: $LOKI_VERSION
+    hostname: loki-frontend
+    container_name: loki-frontend
+    command: "-config.file=/etc/loki/config.yaml -target=query-frontend -frontend.downstream-url=http://loki-read:3100"
+    ports:
+      - "3100"
+    volumes:
+      - type: bind
+        source: ./loki/config/loki-config.yaml
+        target: /etc/loki/config.yaml
+        read_only: true
+    networks:
+      - monitoring-network
+
+  loki-read:
+    build:
+      context: loki/
+      args:
+        LOKI_VERSION: $LOKI_VERSION
+    hostname: loki-read
+    container_name: loki-read
+    command: "-config.file=/etc/loki/config.yaml -target=read"
+    ports:
+      - 3101:3100
+      - 7946
+      - 9095
+    volumes:
+      - type: bind
+        source: ./loki/config/loki-config.yaml
+        target: /etc/loki/config.yaml
+        read_only: true
+    networks:
+      - monitoring-network
+
+  loki-write:
+    build:
+      context: loki/
+      args:
+        LOKI_VERSION: $LOKI_VERSION
+    hostname: loki-write
+    container_name: loki-write
+    command: "-config.file=/etc/loki/config.yaml -target=write"
+    ports:
+      - 3102:3100
+      - 7946
+      - 9095
+    volumes:
+      - type: bind
+        source: ./loki/config/loki-config.yaml
+        target: /etc/loki/config.yaml
+        read_only: true
+    networks:
+      - monitoring-network
+
+  promtail:
+    build:
+      context: promtail/
+      args:
+        PROMTAIL_VERSION: $PROMTAIL_VERSION
+    hostname: promtail
+    container_name: promtail
+    command: -config.file=/etc/promtail/config.yaml
+    ports:
+      - "9080:9080"
+    volumes:
+      - type: bind
+        source: ./promtail/config/promtail-local-config.yaml
+        target: /etc/promtail/config.yaml
+        read_only: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    networks:
+      - monitoring-network
+
+  minio:
+    build:
+      context: minio/
+      args:
+        MINIO_VERSION: $MINIO_VERSION
+    hostname: minio
+    container_name: minio
+    environment:
+      - MINIO_ACCESS_KEY=loki
+      - MINIO_SECRET_KEY=supersecret
+      - MINIO_PROMETHEUS_AUTH_TYPE=public
+      - MINIO_UPDATE=off
+    ports:
+      - 9000
+    volumes:
+      - type: bind
+        source: ./data/minio
+        target: /data
+    networks:
+      - monitoring-network
+
 networks:
   monitoring-network:
     driver: bridge

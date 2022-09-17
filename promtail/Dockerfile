@@ -1,0 +1,3 @@
+ARG PROMTAIL_VERSION
+
+FROM grafana/promtail:${PROMTAIL_VERSION}

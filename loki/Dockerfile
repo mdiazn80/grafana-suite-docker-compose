@@ -1,0 +1,3 @@
+ARG LOKI_VERSION
+
+FROM grafana/loki:${LOKI_VERSION}
