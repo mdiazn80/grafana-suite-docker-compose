@@ -24,8 +24,48 @@ services:
         source: ./grafana/datasources
         target: /etc/grafana/provisioning/datasources
     networks:
-      - grafana-network
+      - monitoring-network
+
+  prometheus:
+    build:
+      context: prometheus/
+      args:
+        PROMETHEUS_VERSION: $PROMETHEUS_VERSION
+    hostname: prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - type: bind
+        source: ./prometheus/config/prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+        read_only: true
+      - type: bind
+        source: ./data/prometheus
+        target: /prometheus
+    networks:
+      - monitoring-network
+
+  alertmanager:
+    build:
+      context: alertmanager/
+      args:
+        ALERTMANAGER_VERSION: $ALERTMANAGER_VERSION
+    hostname: alertmanager
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - type: bind
+        source: ./alertmanager/config/alertmanager.yml
+        target: /etc/alertmanager/alertmanager.yml
+        read_only: true
+      - type: bind
+        source: ./data/alertmanager
+        target: /alertmanager
+    networks:
+      - monitoring-network
 
 networks:
-  grafana-network:
+  monitoring-network:
     driver: bridge

@@ -1,4 +1,4 @@
-# grafana-docker-compose
+# grafana-suite-docker-compose
 
 ## Requirements
 
