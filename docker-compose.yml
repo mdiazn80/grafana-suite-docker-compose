@@ -179,7 +179,7 @@ services:
         target: /etc/promtail/config.yaml
         read_only: true
       - type: bind
-        source: ./data/loki
+        source: ./data/test
         target: /var/log/
     networks:
       - monitoring-network
@@ -218,7 +218,7 @@ services:
       - --type=log
     volumes:
       - type: bind
-        source: ./data/loki
+        source: ./data/test
         target: /var/log/
 
 networks:
