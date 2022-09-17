@@ -179,8 +179,8 @@ services:
         target: /etc/promtail/config.yaml
         read_only: true
       - type: bind
-        source: /var/run/docker.sock
-        target: /var/run/docker.sock
+        source: ./data/loki
+        target: /var/log/
     networks:
       - monitoring-network
 
@@ -204,6 +204,22 @@ services:
         target: /data
     networks:
       - monitoring-network
+
+  # TEST
+  log-generator:
+    image: mingrammer/flog
+    command:
+      - --loop
+      - --format=json
+      - --number=10    # number of log lines to generate per second
+      - --delay=100ms  # delay between log lines
+      - --output=/var/log/generated-logs.txt
+      - --overwrite
+      - --type=log
+    volumes:
+      - type: bind
+        source: ./data/loki
+        target: /var/log/
 
 networks:
   monitoring-network:
