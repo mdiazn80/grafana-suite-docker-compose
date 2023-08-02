@@ -1,6 +1,32 @@
 version: '3.7'
 
 services:
+  nginx:
+    build:
+      context: nginx/
+      args:
+        NGINX_VERSION: $NGINX_VERSION
+    hostname: nginx
+    container_name: nginx
+    volumes:
+      - type: bind
+        source: ./nginx/config/nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+      - type: bind
+        source: ./nginx/config/conf.d
+        target: /etc/nginx/conf.d
+        read_only: true
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - monitoring-network
+    depends_on:
+      - alertmanager
+      - prometheus
+      - grafana
+
   grafana:
     build:
       context: grafana/
@@ -9,7 +35,7 @@ services:
     hostname: grafana
     container_name: grafana
     ports:
-      - 3000:3000
+      - "3000"
     volumes:
       - type: bind
         source: ./data/grafana
@@ -34,7 +60,7 @@ services:
     hostname: prometheus
     container_name: prometheus
     ports:
-      - "9090:9090"
+      - "9090"
     volumes:
       - type: bind
         source: ./prometheus/config/prometheus.yml
@@ -54,7 +80,7 @@ services:
     hostname: alertmanager
     container_name: alertmanager
     ports:
-      - "9093:9093"
+      - "9093"
     volumes:
       - type: bind
         source: ./alertmanager/config/alertmanager.yml
@@ -74,7 +100,7 @@ services:
     hostname: nodeexporter
     container_name: nodeexporter
     ports:
-      - "9100:9100"
+      - "9100"
     command:
       - '--path.rootfs=/host'
     pid: host
@@ -95,7 +121,7 @@ services:
     container_name: gateway
     command: "nginx -g 'daemon off;'"
     ports:
-      - "8080:80"
+      - "8080"
       - "3100"
     volumes:
       - type: bind
@@ -132,9 +158,9 @@ services:
     container_name: loki-read
     command: "-config.file=/etc/loki/config.yaml -target=read"
     ports:
-      - 3101:3100
-      - 7946
-      - 9095
+      - "3101"
+      - "7946"
+      - "9095"
     volumes:
       - type: bind
         source: ./loki/config/loki-config.yaml
@@ -152,9 +178,9 @@ services:
     container_name: loki-write
     command: "-config.file=/etc/loki/config.yaml -target=write"
     ports:
-      - 3102:3100
-      - 7946
-      - 9095
+      - "3102"
+      - "7946"
+      - "9095"
     volumes:
       - type: bind
         source: ./loki/config/loki-config.yaml
@@ -172,7 +198,7 @@ services:
     container_name: promtail
     command: -config.file=/etc/promtail/config.yaml
     ports:
-      - "9080:9080"
+      - "9080"
     volumes:
       - type: bind
         source: ./promtail/config/promtail-local-config.yaml
@@ -197,7 +223,7 @@ services:
       - MINIO_PROMETHEUS_AUTH_TYPE=public
       - MINIO_UPDATE=off
     ports:
-      - 9000
+      - "9000"
     volumes:
       - type: bind
         source: ./data/minio
