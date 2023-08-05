@@ -11,3 +11,5 @@ data/minio/*
 !data/minio/.gitkeep
 data/test/*
 !data/test/.gitkeep
+nginx/cert/*
+!nginx/cert/.gitkeep

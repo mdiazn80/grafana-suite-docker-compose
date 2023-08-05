@@ -17,6 +17,10 @@ services:
         source: ./nginx/config/conf.d
         target: /etc/nginx/conf.d
         read_only: true
+      - type: bind
+        source: ./nginx/cert
+        target: /etc/nginx/cert
+        read_only: true
     ports:
       - "80:80"
       - "443:443"
